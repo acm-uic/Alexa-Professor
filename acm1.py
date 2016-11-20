@@ -1,6 +1,7 @@
 import urllib2
-
-
+#import cPickle as pkl
+import csv
+import json
 
 url="https://www.cs.uic.edu/faculty/"
 page=urllib2.urlopen(url)
@@ -55,29 +56,31 @@ for i in range(0,27):
 		                
                 rmpurl=urllib2.urlopen(queryString)
                 rmpsoup=BeautifulSoup(rmpurl)
-
+		data[profName]={}
 		result=rmpsoup.find_all(class_="listing PROFESSOR")
 		for i in result:
 			searchResult=i.find(class_="sub").string
 #			print searchResult
 			uic="UNIVERSITY OF ILLINOIS AT CHICAGO"
 			if uic.lower()in searchResult.lower():
-				print i.find(class_="main").string
+#				print i.find(class_="main").string
 #				print i.a["href"]	
 				profURL="https://www.ratemyprofessors.com/"+i.a["href"]
 				profRMP=urllib2.urlopen(profURL)
 				profSOUP=BeautifulSoup(profRMP)
 				try:
-					print profSOUP.find_all(class_="grade")[0].string
-                                	print extract(profSOUP.find_all(class_="grade")[2].string)
+					data[profName]["Rate My Professor Rating"]= profSOUP.find_all(class_="grade")[0].string
+					data[profName]["Level Of Difficulty"]=extract(profSOUP.find_all(class_="grade")[2].string)
+#					print profSOUP.find_all(class_="grade")[0].string
+ #                               	print extract(profSOUP.find_all(class_="grade")[2].string)
 
 				except IndexError:
-					print "error"
+					continue
+#					print "error"
 				#print profSOUP.find_all(class_="grade")[0].string
-		#		print extract(profSOUP.find_all(class_="grade")[2].string)
-	
+		#		print extract(profSOUP.find_all(class_="grade")[2].string
 	#	print extract(profRole)
-		data[profName]={}
+		#data[profName]={}
 		Details=temp_soup.find_all("blockquote")
 		#print Details
 		data[profName]["Role"]=extract(profRole.string)
@@ -98,7 +101,14 @@ for i in range(0,27):
 		#print data
 	ch+=1
 
-for i in data:
-	print i ,
-	print data[i]
-	print "\n\n\n"
+#MyProf=[]
+
+#for i in data:
+#	MyProf.append(data[i])
+#pkl.dump( MyProf, open( "myDicts.p", "wb" ) )
+
+with open('mydatafile','w') as f:
+	json.dump(data,f)
+
+#print MyProf
+
